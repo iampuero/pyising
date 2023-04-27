@@ -8,7 +8,7 @@ The original matlab implementation can be found in [this repository](https://git
 
 ## Ising Model
 
-The Ising Model is a statistical model used in physics and other fields to describe systems with binary variables. Inference in the Ising Model involves estimating the probability distribution of the binary variables.
+The Ising Model is a statistical model used in physics and other fields to describe systems with binary variables. Inference involves estimating the probability distribution of the binary variables.
 
 The probability distribution of the Ising Model can be expressed as:
 
@@ -18,4 +18,13 @@ $$
 
 where $\mathbf{x}$ is a vector of binary variables, $h_i$ is the external field acting on variable $i$, $J_{i,j}$ is the interaction strength between variables $i$ and $j$, and $Z$ is the partition function.
 
-This project uses the Metropolis-Hastings algorithm to perform inference in the Ising Model and estimate the parameters $h$ and $J$ from binary data. The algorithm is implemented in C for efficiency and can be called from Python using the provided wrapper functions.
+This implementation uses the Metropolis-Hastings algorithm to perform inference in the Ising Model and estimate the parameters $h$ and $J$ from binary data. 
+
+The algorithm is implemented in C for efficiency and can be called from Python using the provided wrapper functions.
+
+## Usage
+
+Compile the `src/c/CMC_IsingModel.c` file.
+```
+gcc -shared -o MCMC_IsingModel.so -fPIC MCMC_IsingModel.c
+```
