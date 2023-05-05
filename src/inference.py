@@ -1,11 +1,20 @@
+from scipy.sparse import csr_matrix
+from scipy.linalg import eigvalsh
+import numpy as np
+import os
+from json import save
+from dataDrivenIsing import dataDriven_IsingModel
 
-def inference(loadfolder, savefolder, loadfile, etaH, etaJ):
+def offset(n, N):
+    off = N + (n - 1) * (N - 2) - (n - 1) * (n - 2) // 2 - 1
+    return off
+
+def inference(raster, savefolder, filename, etaH, etaJ):
     # Load data
-    data = scipy.io.loadmat(os.path.join(loadfolder, loadfile))
-    binnedSpikes = data['binnedSpikes']
-    binnedSpikes = np.asarray(binnedSpikes, dtype=bool)
+    binnedSpikes = np.asarray(raster, dtype=bool)
     N, T = binnedSpikes.shape
-
+    D = N * (N + 1) // 2
+    
     # MEAN AND COVARIANCE OF SUFFICIENT STATISTICS
     offMat = np.zeros((N, N), dtype=int)
     for n1 in range(N):
@@ -57,8 +66,10 @@ def inference(loadfolder, savefolder, loadfile, etaH, etaJ):
             ccData[offset(n1 + 1, N) + n2 - N] = p[offset(n1 + 1, N) + n2] - p[n1] * p[n2]
             ccModel[offset(n1 + 1, N) + n2 - N] = q[offset(n1 + 1, N) + n2] - q[n1] * q[n2]
 
-    # Save results
-    scipy.io.savemat(os.path.join(savefolder, loadfile), {
+
+    
+    #saves a json dictionary with the results
+    save(os.path.join(savefolder, filename + '.json'), {
         'hListIn': hListIn,
         'jListIn': jListIn,
         'p': p,
@@ -68,4 +79,5 @@ def inference(loadfolder, savefolder, loadfile, etaH, etaJ):
         'ccData': ccData,
         'ccModel': ccModel
         })
+
 

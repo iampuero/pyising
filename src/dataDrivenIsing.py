@@ -1,18 +1,13 @@
 import ctypes
 import numpy as np
-import scipy.io
 import os
-from scipy.sparse import csr_matrix
-from scipy.linalg import eigvalsh
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 
-def offset(n, N):
-    off = N + (n - 1) * (N - 2) - (n - 1) * (n - 2) // 2 - 1
-    return off
+
 
 # Load the shared library
-mcmc_ising_model_lib = ctypes.CDLL('./mcmc_ising_model.so')
+mcmc_ising_model_lib = ctypes.CDLL('src/c/MCMC_IsingModel.so')
 
 # Define the Python wrapper for the MCMC_IsingModel C function
 def MCMC_IsingModel(N, B, first_steps, logTd, J, latticeIn, p, latticeOut):
@@ -147,3 +142,5 @@ def dataDriven_IsingModel(N, B, Bmin, logTd, p, chi, eta, alpha, epsThreshold, n
             print(step, alpha, ss, np.log(epsOpMc))
 
     return params, output
+
+
