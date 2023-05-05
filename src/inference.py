@@ -2,8 +2,8 @@ from scipy.sparse import csr_matrix
 from scipy.linalg import eigvalsh
 import numpy as np
 import os
-from json import save
-from dataDrivenIsing import dataDriven_IsingModel
+import json
+from .dataDrivenIsing import dataDriven_IsingModel
 
 def offset(n, N):
     off = N + (n - 1) * (N - 2) - (n - 1) * (n - 2) // 2 - 1
@@ -11,7 +11,7 @@ def offset(n, N):
 
 def inference(raster, savefolder, filename, etaH, etaJ):
     # Load data
-    binnedSpikes = np.asarray(raster, dtype=bool)
+    binnedSpikes = raster #np.asarray(raster, dtype=bool)
     N, T = binnedSpikes.shape
     D = N * (N + 1) // 2
     
@@ -28,7 +28,7 @@ def inference(raster, savefolder, filename, etaH, etaJ):
     for b in range(T):
         L = np.nonzero(binnedSpikes[:, b])[0]
         index = offMat[L.reshape(-1, 1), L]
-        index_flat = index.flatten()
+        index_flat = index.flatten()-1 # -1 because python is 0-indexed
         chi[np.ix_(index_flat, index_flat)] += 1
 
     p = np.diag(chi) / T
@@ -69,7 +69,8 @@ def inference(raster, savefolder, filename, etaH, etaJ):
 
     
     #saves a json dictionary with the results
-    save(os.path.join(savefolder, filename + '.json'), {
+    with open(os.path.join(savefolder, filename + '.json'),"w") as savefile:
+        json.dump({
         'hListIn': hListIn,
         'jListIn': jListIn,
         'p': p,
@@ -78,6 +79,6 @@ def inference(raster, savefolder, filename, etaH, etaJ):
         'params': params,
         'ccData': ccData,
         'ccModel': ccModel
-        })
+        }, savefile)
 
 

@@ -28,3 +28,8 @@ Compile the `src/c/CMC_IsingModel.c` file.
 ```
 gcc -shared -o MCMC_IsingModel.so -fPIC MCMC_IsingModel.c
 ```
+
+## Example raster file
+
+Degus MEA obtained binarized raster under natural movie stimulus with 0.02[s] binning in `data/degus_0_nmovie_dt_0.02.npz`
+The raster file is stored in scipy sparse matrix format.
