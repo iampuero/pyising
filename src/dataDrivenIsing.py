@@ -23,7 +23,7 @@ def MCMC_IsingModel(N, B, first_steps, logTd, J, latticeIn, p, latticeOut):
 
 
 
-def dataDriven_IsingModel(N, B, Bmin, logTd, p, chi, eta, alpha, epsThreshold, nStepMore, nWork, verbose):
+def dataDriven_IsingModel(N, B, Bmin, logTd, p, chi, eta, alpha, epsThreshold, nStepMore, nWork, params, verbose):
     """
     Infer the Ising couplings via the data-driven algorithm with L2 regularization.
     
@@ -49,12 +49,13 @@ def dataDriven_IsingModel(N, B, Bmin, logTd, p, chi, eta, alpha, epsThreshold, n
     time = 0
 
     # INITIALIZATION LATTICE
-    lattice = np.random.rand(nWork, N) < np.tile(p[:N], (nWork, 1))
+    lattice = (np.random.rand(nWork, N) < np.tile(p[:N], (nWork, 1))).astype(np.int32)
 
     qMat = np.zeros((nWork, D))
     # C code  MCMC_IsingModel function
     for nW in range(nWork):
-        qMat[nW, :], lattice[nW, :] = MCMC_IsingModel(N, Bmin // nWork, int(np.log2(B) - 2), logTd, params, lattice[nW, :])
+        #qMat[nW, :], lattice[nW, :] = 
+        MCMC_IsingModel(N, int(Bmin // nWork), int(np.log2(B) - 2), logTd, params, lattice[nW, :], params, lattice[nW, :])
 
     q = np.mean(qMat, axis=0)
 
@@ -69,20 +70,19 @@ def dataDriven_IsingModel(N, B, Bmin, logTd, p, chi, eta, alpha, epsThreshold, n
     epsOpMcOld = epsOpMc
 
     step = 0
-    Beff = max(min(B / (epsOpMcOld), B), Bmin)
+    Beff = max(min(B / np.min(epsOpMcOld), B), Bmin)
     if verbose:
         print('Step - learning rate - ratio of MCMC steps - eps old - eps new')
         print(step, alpha, Beff / B, np.log(epsOpMcOld), np.log(epsOpMc))
 
     output = [step, alpha, epsOpMc, Beff]
-
     while (epsOpMc > epsThreshold) and (step < 150):
 
         jListTry = params + alpha * contraGrad
 
         qMatTry = np.zeros((nWork, D))
         for nW in range(nWork):
-            qMatTry[nW, :], lattice[nW, :] = MCMC_IsingModel(N, Beff // nWork, int(np.log2(B) - 4), logTd, jListTry, lattice[nW, :])
+            qMatTry[nW, :], lattice[nW, :] = MCMC_IsingModel(N, Beff // nWork, int(np.log2(B) - 4), logTd, jListTry, lattice[nW, :], jListTry, lattice[nW, :])
 
         qTry = np.mean(qMatTry, axis=0)
         step += 1

@@ -146,8 +146,8 @@ void mexFunction( int nlhs, mxArray *plhs[],
     N = mxGetScalar(prhs[0]);
     B = mxGetScalar(prhs[1]);
     first_steps = mxGetScalar(prhs[2]);
+
     logTd = mxGetScalar(prhs[3]);
-    
     J = mxGetPr(prhs[4]);
     latticeIn = mxGetPr(prhs[5]);
     

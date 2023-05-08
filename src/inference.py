@@ -46,7 +46,7 @@ def inference(raster, savefolder, filename, etaH, etaJ):
     etaMat = np.diag(np.hstack((etaH * np.ones(N), etaJ * np.ones(N * (N - 1) // 2))))
 
     # PARAMETERS INFERENCE
-    num_workers = None  # Use the default number of workers
+    num_workers = 8#None  # Use the default number of workers
 
     logTd = 3
     nStepMore = 0  # Increase this for posterior sampling
@@ -55,7 +55,7 @@ def inference(raster, savefolder, filename, etaH, etaJ):
     verbose = True
 
     # Make sure the dataDriven_IsingModel function is defined before calling it
-    q, output = dataDriven_IsingModel(N, T, 1 / eV[0], logTd, p, chiC, etaMat, alphaStart, threshold, nStepMore, num_workers, verbose)
+    q, output = dataDriven_IsingModel(N, T, 1 / eV[0], logTd, p, chiC, etaMat, alphaStart, threshold, nStepMore, num_workers, params, verbose)
 
     # PLOTTING CORRELATIONS
     ccData = np.zeros(N * (N - 1) // 2)
